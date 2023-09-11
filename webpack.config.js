@@ -4,6 +4,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); // Import the plugin
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = {
   mode: "production",
@@ -101,11 +102,16 @@ module.exports = {
       template: "src/index.html", // Path to your HTML template
     }),
     new BundleAnalyzerPlugin(),
-    new MiniCssExtractPlugin({
-      // Add this plugin
-      filename: "[name].[contenthash].css", // Ensure unique CSS filenames
-    }),
+
     new MiniCssExtractPlugin(),
+    new CompressionPlugin({
+      filename: "[path][base].gz", // Output compressed files with .gz extension
+      algorithm: "gzip", // Use gzip compression
+      test: /\.(js|css|html|svg)$/, // Compress JavaScript, CSS, HTML, and SVG files
+      threshold: 8192, // Files larger than 8KB will be compressed
+      minRatio: 0.8, // Only compress files if the compression ratio is at least 0.8
+    }),
+    new CleanWebpackPlugin(),
   ],
   resolve: {
     extensions: [".js", ".jsx"],
